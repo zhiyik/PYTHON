@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
+# pip install anytree pandas
 import math
 from anytree import AnyNode, RenderTree, LevelOrderIter
 from anytree.render import AsciiStyle
 import pandas as pd
 import numpy as np
 from pprint import pprint
-from chefboost.training import Training
 
 final = []
 cols = ["股價報酬率", "負債佔比", "長期資金佔不動產.廠房及設備比率", "現金占比", "應收帳款占比", "存貨占比", "權益占比", "現金流量比", "流動比率", "速動比率", "利息保障倍數", "應收款項週轉率", "平均收現日數", "存貨週轉率", "應付款項週轉率", "平均銷貨日數", "平均付現日數", "不動產.廠房及設備週轉率", "總資產週轉率", "資產報酬率", "權益報酬率", "純益率", "每股盈餘"]
@@ -37,11 +37,12 @@ def id3(subset, origin, features, node, target="股價報酬率"):
     """ID3 algorithm
 
     初始的 subset 是原來的 training set, 會根據剛剛算出來的 metric 切分資料，別分別在傳入 id3()
+    這個迭代會直到一些條件達成，這裡是設計 當有 subset 少於三筆資料就停止，並判斷結果是這些資料的 投資報酬率的平均值
     """
     if len(subset) <= 3:
         node.isleaf=True
         return
-    if len(features) == 0: return node
+    if len(features) == 0: return
 
     rank = sorted([(feat, metric(subset, feat)) for feat in features], key=lambda x:x[1][1])
     selected_feat = rank[0][0]
