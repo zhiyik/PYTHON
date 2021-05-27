@@ -80,7 +80,7 @@ def predict(current, data, stop=True):
 
 
 if "__main__" == __name__:
-    dataset = pd.read_csv("dataset.csv", names=cols, skiprows=1)
+    dataset = pd.read_csv("new_dataset.csv", names=cols, skiprows=1)
 
     # Init root node
     root = AnyNode(id="root", name="", st=None, criterion=None, threshold=None, average=None, isleaf=False)
