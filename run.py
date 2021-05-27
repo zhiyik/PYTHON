@@ -11,6 +11,10 @@ final = []
 cols = ["股價報酬率", "負債佔比", "長期資金佔不動產.廠房及設備比率", "現金占比", "應收帳款占比", "存貨占比", "權益占比", "現金流量比", "流動比率", "速動比率", "利息保障倍數", "應收款項週轉率", "平均收現日數", "存貨週轉率", "應付款項週轉率", "平均銷貨日數", "平均付現日數", "不動產.廠房及設備週轉率", "總資產週轉率", "資產報酬率", "權益報酬率", "純益率", "每股盈餘"]
 
 def metric(samples, feat, target="股價報酬率"):
+    """ 對每一個 subset 的 每一個 feature 計算 股價報酬率的 MSE
+    原來的資料是有限類別的，因此可以針對每種類別的可能性計算機率與 entropy
+    但這裡的 target 報酬率是 continous data, 因此為了 fit data, 選擇較常使用的 Mean Square Error
+    """
     samples.sort_values(by=[feat], inplace=True)
     samples["avg"] = samples[feat].rolling(window=2).mean()
 
@@ -30,6 +34,10 @@ def metric(samples, feat, target="股價報酬率"):
 
 
 def id3(subset, origin, features, node, target="股價報酬率"):
+    """ID3 algorithm
+
+    初始的 subset 是原來的 training set, 會根據剛剛算出來的 metric 切分資料，別分別在傳入 id3()
+    """
     if len(subset) <= 3:
         node.isleaf=True
         return
@@ -70,6 +78,7 @@ def predict(current, data, stop=True):
 if "__main__" == __name__:
     dataset = pd.read_csv("dataset.csv", names=cols, skiprows=1)
 
+    # Init root node
     root = AnyNode(id="root", description="", st=None, criterion=None, threshold=None, average=None, isleaf=False)
     tree = id3(dataset, dataset, cols[1:], root)
     print(RenderTree(tree, style=AsciiStyle()))
