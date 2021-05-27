@@ -86,3 +86,46 @@ if "__main__" == __name__:
 
     # Predict
     predict(tree, dataset.head())
+
+    # $ python run.py
+    # AnyNode(average=None, criterion='速動比率', description='速動比率 < 163.92', id='root', isleaf=False, st=None, threshold=163.92219850000004)
+    # |-- AnyNode(average=0.84351145, criterion='存貨占比', description='存貨占比 < 26.80', isleaf=False, st=True, threshold=26.8)
+    # |   |-- AnyNode(average=-0.08721644585714285, criterion='現金流量比', description='現金流量比 < 37.80', isleaf=False, st=True, threshold=37.8)
+    # |   |   |-- AnyNode(average=-0.09049773800000001, criterion='資產報酬率', description='資產報酬率 < 1.80', isleaf=False, st=True, threshold=1.7980808364999998)
+    # |   |   |   |-- AnyNode(average=0.12472465025, criterion=None, description='', isleaf=True, st=True, threshold=None)
+    # |   |   |   +-- AnyNode(average=0.24460932000000002, criterion='應收帳款占比', description='應收帳款占比 < 23.75', isleaf=False, st=False, threshold=23.75)
+    # |   |   |       |-- AnyNode(average=0.04076087, criterion=None, description='', isleaf=True, st=True, threshold=None)
+    # |   |   |       +-- AnyNode(average=0.152712577, criterion=None, description='', isleaf=True, st=False, threshold=None)
+    # |   |   +-- AnyNode(average=0.16468620683333332, criterion=None, description='', isleaf=True, st=False, threshold=None)
+    # |   +-- AnyNode(average=0.12823135757142856, criterion='平均銷貨日數', description='平均銷貨日數 < 75.14', isleaf=False, st=False, threshold=75.14115065000001)
+    # |       |-- AnyNode(average=0.021336732666666667, criterion='利息保障倍數', description='利息保障倍數 < 114068.82', isleaf=False, st=True, threshold=114068.82097500001)
+    # |       |   |-- AnyNode(average=0.054716981, criterion=None, description='', isleaf=True, st=True, threshold=None)
+    # |       |   +-- AnyNode(average=-0.24308076666666667, criterion=None, description='', isleaf=True, st=False, threshold=None)
+    # |       +-- AnyNode(average=-0.16863132975, criterion=None, description='', isleaf=True, st=False, threshold=None)
+    # +-- AnyNode(average=0.02050745585714286, criterion=None, description='', isleaf=True, st=False, threshold=None)
+    # 速動比率 < 163.92
+    # 存貨占比 < 26.80
+    # 現金流量比 < 37.80
+    # 資產報酬率 < 1.80
+    # Predicted value: 0.125
+    # 速動比率 < 163.92
+    # 存貨占比 < 26.80
+    # 現金流量比 < 37.80
+    # 資產報酬率 < 1.80
+    # 應收帳款占比 < 23.75
+    # Predicted value: 0.041
+    # 速動比率 < 163.92
+    # 存貨占比 < 26.80
+    # 平均銷貨日數 < 75.14
+    # 利息保障倍數 < 114068.82
+    # Predicted value: 0.055
+    # 速動比率 < 163.92
+    # 存貨占比 < 26.80
+    # 現金流量比 < 37.80
+    # 資產報酬率 < 1.80
+    # 應收帳款占比 < 23.75
+    # Predicted value: 0.041
+    # 速動比率 < 163.92
+    # 存貨占比 < 26.80
+    # 現金流量比 < 37.80
+    # Predicted value: 0.165
