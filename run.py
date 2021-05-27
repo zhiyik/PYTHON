@@ -2,6 +2,8 @@
 # pip install anytree pandas
 import math
 from anytree import AnyNode, RenderTree, LevelOrderIter
+from anytree.exporter import UniqueDotExporter
+from anytree.dotexport import RenderTreeGraph
 from anytree.render import AsciiStyle
 import pandas as pd
 import numpy as np
@@ -41,6 +43,7 @@ def id3(subset, origin, features, node, target="股價報酬率"):
     """
     if len(subset) <= 3:
         node.isleaf=True
+        node.name = F"{node.average:.2f}"
         return
     if len(features) == 0: return
 
@@ -51,12 +54,12 @@ def id3(subset, origin, features, node, target="股價報酬率"):
     df2 = subset.where(subset[selected_feat] < threshold).dropna(subset=[target])
     features.remove(selected_feat)
 
-    node.description = F"{selected_feat} < {threshold:.2f}"
+    node.name = F"{selected_feat} < {threshold:.2f}"
     node.criterion = selected_feat
     node.threshold = threshold
 
-    node_a = AnyNode(parent=node, description="", st=True, criterion=None, threshold=None, average=df1[target].mean(), isleaf=False)
-    node_b = AnyNode(parent=node, description="", st=False, criterion=None, threshold=None, average=df2[target].mean(), isleaf=False)
+    node_a = AnyNode(parent=node, name="", st=True, criterion=None, threshold=None, average=df1[target].mean(), isleaf=False)
+    node_b = AnyNode(parent=node, name="", st=False, criterion=None, threshold=None, average=df2[target].mean(), isleaf=False)
 
     id3(df2, origin, features, node_a)
     id3(df1, origin, features, node_b)
@@ -68,7 +71,7 @@ def predict(current, data, stop=True):
     for idx, row in data.iterrows():
         node = current
         while not node.isleaf:
-            print(node.description)
+            print(node.name)
             if row[cols.index(node.criterion)] < node.threshold:
                 node = node.children[0]
             else:
@@ -80,29 +83,31 @@ if "__main__" == __name__:
     dataset = pd.read_csv("dataset.csv", names=cols, skiprows=1)
 
     # Init root node
-    root = AnyNode(id="root", description="", st=None, criterion=None, threshold=None, average=None, isleaf=False)
+    root = AnyNode(id="root", name="", st=None, criterion=None, threshold=None, average=None, isleaf=False)
     tree = id3(dataset, dataset, cols[1:], root)
     print(RenderTree(tree, style=AsciiStyle()))
 
     # Predict
     predict(tree, dataset.head())
 
+    RenderTreeGraph(root).to_picture("tree.png")
+
     # $ python run.py
-    # AnyNode(average=None, criterion='速動比率', description='速動比率 < 163.92', id='root', isleaf=False, st=None, threshold=163.92219850000004)
-    # |-- AnyNode(average=0.84351145, criterion='存貨占比', description='存貨占比 < 26.80', isleaf=False, st=True, threshold=26.8)
-    # |   |-- AnyNode(average=-0.08721644585714285, criterion='現金流量比', description='現金流量比 < 37.80', isleaf=False, st=True, threshold=37.8)
-    # |   |   |-- AnyNode(average=-0.09049773800000001, criterion='資產報酬率', description='資產報酬率 < 1.80', isleaf=False, st=True, threshold=1.7980808364999998)
-    # |   |   |   |-- AnyNode(average=0.12472465025, criterion=None, description='', isleaf=True, st=True, threshold=None)
-    # |   |   |   +-- AnyNode(average=0.24460932000000002, criterion='應收帳款占比', description='應收帳款占比 < 23.75', isleaf=False, st=False, threshold=23.75)
-    # |   |   |       |-- AnyNode(average=0.04076087, criterion=None, description='', isleaf=True, st=True, threshold=None)
-    # |   |   |       +-- AnyNode(average=0.152712577, criterion=None, description='', isleaf=True, st=False, threshold=None)
-    # |   |   +-- AnyNode(average=0.16468620683333332, criterion=None, description='', isleaf=True, st=False, threshold=None)
-    # |   +-- AnyNode(average=0.12823135757142856, criterion='平均銷貨日數', description='平均銷貨日數 < 75.14', isleaf=False, st=False, threshold=75.14115065000001)
-    # |       |-- AnyNode(average=0.021336732666666667, criterion='利息保障倍數', description='利息保障倍數 < 114068.82', isleaf=False, st=True, threshold=114068.82097500001)
-    # |       |   |-- AnyNode(average=0.054716981, criterion=None, description='', isleaf=True, st=True, threshold=None)
-    # |       |   +-- AnyNode(average=-0.24308076666666667, criterion=None, description='', isleaf=True, st=False, threshold=None)
-    # |       +-- AnyNode(average=-0.16863132975, criterion=None, description='', isleaf=True, st=False, threshold=None)
-    # +-- AnyNode(average=0.02050745585714286, criterion=None, description='', isleaf=True, st=False, threshold=None)
+    # AnyNode(average=None, criterion='速動比率', name='速動比率 < 163.92', id='root', isleaf=False, st=None, threshold=163.92219850000004)
+    # |-- AnyNode(average=0.84351145, criterion='存貨占比', name='存貨占比 < 26.80', isleaf=False, st=True, threshold=26.8)
+    # |   |-- AnyNode(average=-0.08721644585714285, criterion='現金流量比', name='現金流量比 < 37.80', isleaf=False, st=True, threshold=37.8)
+    # |   |   |-- AnyNode(average=-0.09049773800000001, criterion='資產報酬率', name='資產報酬率 < 1.80', isleaf=False, st=True, threshold=1.7980808364999998)
+    # |   |   |   |-- AnyNode(average=0.12472465025, criterion=None, name='', isleaf=True, st=True, threshold=None)
+    # |   |   |   +-- AnyNode(average=0.24460932000000002, criterion='應收帳款占比', name='應收帳款占比 < 23.75', isleaf=False, st=False, threshold=23.75)
+    # |   |   |       |-- AnyNode(average=0.04076087, criterion=None, name='', isleaf=True, st=True, threshold=None)
+    # |   |   |       +-- AnyNode(average=0.152712577, criterion=None, name='', isleaf=True, st=False, threshold=None)
+    # |   |   +-- AnyNode(average=0.16468620683333332, criterion=None, name='', isleaf=True, st=False, threshold=None)
+    # |   +-- AnyNode(average=0.12823135757142856, criterion='平均銷貨日數', name='平均銷貨日數 < 75.14', isleaf=False, st=False, threshold=75.14115065000001)
+    # |       |-- AnyNode(average=0.021336732666666667, criterion='利息保障倍數', name='利息保障倍數 < 114068.82', isleaf=False, st=True, threshold=114068.82097500001)
+    # |       |   |-- AnyNode(average=0.054716981, criterion=None, name='', isleaf=True, st=True, threshold=None)
+    # |       |   +-- AnyNode(average=-0.24308076666666667, criterion=None, name='', isleaf=True, st=False, threshold=None)
+    # |       +-- AnyNode(average=-0.16863132975, criterion=None, name='', isleaf=True, st=False, threshold=None)
+    # +-- AnyNode(average=0.02050745585714286, criterion=None, name='', isleaf=True, st=False, threshold=None)
     # 速動比率 < 163.92
     # 存貨占比 < 26.80
     # 現金流量比 < 37.80
